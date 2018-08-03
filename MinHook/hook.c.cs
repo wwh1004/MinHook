@@ -370,9 +370,7 @@ namespace MinHooks {
 
 		//-------------------------------------------------------------------------
 		private static void Freeze(FROZEN_THREADS* pThreads, uint pos, uint action) {
-#if DEBUG
-			return;
-#endif
+#if !DEBUG
 			pThreads->pItems = null;
 			pThreads->capacity = 0;
 			pThreads->size = 0;
@@ -392,13 +390,12 @@ namespace MinHooks {
 					}
 				}
 			}
+#endif
 		}
 
 		//-------------------------------------------------------------------------
 		private static void Unfreeze(FROZEN_THREADS* pThreads) {
-#if DEBUG
-			return;
-#endif
+#if !DEBUG
 			if (pThreads->pItems != null) {
 				uint i;
 				for (i = 0; i < pThreads->size; ++i) {
@@ -411,6 +408,7 @@ namespace MinHooks {
 
 				HeapFree(g_hHeap, 0, pThreads->pItems);
 			}
+#endif
 		}
 
 		//-------------------------------------------------------------------------
@@ -737,7 +735,7 @@ namespace MinHooks {
 		}
 
 		//-------------------------------------------------------------------------
-		public static MH_STATUS EnableHook(void* pTarget, uint enable) {
+		private static MH_STATUS EnableHook(void* pTarget, uint enable) {
 			MH_STATUS status = MH_STATUS.MH_OK;
 
 			EnterSpinLock();

@@ -34,7 +34,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Attributes.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

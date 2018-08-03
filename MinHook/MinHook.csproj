@@ -35,6 +35,7 @@
     <NoWarn>IDE1006;IDE0032</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MinHook.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
