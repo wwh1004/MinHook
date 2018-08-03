@@ -54,7 +54,7 @@ namespace MinHooks {
 		private const uint THREAD_ACCESS = 0x5a;
 
 		// Hook information.
-		//[StructLayout(LayoutKind.Sequential, Pack = 1)]
+		//[StructLayout(LayoutKind.Sequential)]
 		//private struct HOOK_ENTRY {
 		//	public void* pTarget;        // Address of the target function.
 		//	public void* pDetour;        // Address of the detour or relay function.

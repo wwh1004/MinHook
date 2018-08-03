@@ -1,11 +1,32 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace MinHooks.Test {
 	internal static unsafe class Program {
+		//private delegate int MH_Initialize();
+
+		//private delegate int MH_CreateHook(void* pTarget, void* pDetour, void** ppOriginal);
+
+		//private delegate int MH_EnableHook(void* pTarget);
+
+		//private static MH_Initialize Initialize;
+
+		//private static MH_CreateHook CreateHook;
+
+		//private static MH_EnableHook EnableHook;
+
 		private static bool _isDaysLeftDialogShowed;
+
+		//private static T GetProcDelegate<T>(void* hModule, string funcName) => (T)(object)Marshal.GetDelegateForFunctionPointer((IntPtr)GetProcAddress(hModule, funcName), typeof(T));
+
+		//[DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+		//private static extern void* LoadLibrary(string lpLibFileName);
+
+		//[DllImport("kernel32.dll", CharSet = CharSet.Ansi)]
+		//private static extern void* GetProcAddress(void* hModule, string lpProcName);
 
 		private static void Main(string[] args) {
 			void* pFormDotShowDialogTarget;
@@ -16,8 +37,8 @@ namespace MinHooks.Test {
 			void* pApplicationDotRunOriginalStub;
 			void* temp;
 
-			pFormDotShowDialogTarget = GetMethodAddress(typeof(Form).GetMethod("ShowDialog", new Type[] { typeof(IWin32Window) }));
 			MinHookNative.MH_Initialize();
+			pFormDotShowDialogTarget = GetMethodAddress(typeof(Form).GetMethod("ShowDialog", new Type[] { typeof(IWin32Window) }));
 			void* pFormDotShowDialogDetour = GetMethodAddress(GetMethodByAttribute<FormDotShowDialogAttribute>());
 			MinHookNative.MH_CreateHook(pFormDotShowDialogTarget, pFormDotShowDialogDetour, &pFormDotShowDialogOriginal);
 			pFormDotShowDialogOriginalStub = GetMethodAddress(GetMethodByAttribute<FormDotShowDialogOriginalStubAttribute>());
@@ -30,6 +51,19 @@ namespace MinHooks.Test {
 			MinHookNative.MH_CreateHook(pApplicationDotRunOriginalStub, pApplicationDotRunOriginal, &temp);
 			MinHookNative.MH_EnableHook(pApplicationDotRunOriginalStub);
 			MinHookNative.MH_EnableHook(pApplicationDotRunTarget);
+
+			//void* hMinHook = LoadLibrary("MINHOOK64.dll");
+			//Initialize = GetProcDelegate<MH_Initialize>(hMinHook, "MH_Initialize");
+			//CreateHook = GetProcDelegate<MH_CreateHook>(hMinHook, "MH_CreateHook");
+			//EnableHook = GetProcDelegate<MH_EnableHook>(hMinHook, "MH_EnableHook");
+			//Initialize();
+			//pFormDotShowDialogTarget = GetMethodAddress(typeof(Form).GetMethod("ShowDialog", new Type[] { typeof(IWin32Window) }));
+			//void* pFormDotShowDialogDetour = GetMethodAddress(GetMethodByAttribute<FormDotShowDialogAttribute>());
+			//CreateHook(pFormDotShowDialogTarget, pFormDotShowDialogDetour, &pFormDotShowDialogOriginal);
+			//pFormDotShowDialogOriginalStub = GetMethodAddress(GetMethodByAttribute<FormDotShowDialogOriginalStubAttribute>());
+			//CreateHook(pFormDotShowDialogOriginalStub, pFormDotShowDialogOriginal, &temp);
+			//EnableHook(pFormDotShowDialogOriginalStub);
+			//EnableHook(pFormDotShowDialogTarget);
 
 			new Form {
 				Text = "SplashScreen2 这个是不该显示的，如果显示了表示Hook失败"

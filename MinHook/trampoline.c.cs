@@ -238,7 +238,7 @@ namespace MinHooks {
 			ct->nIP = 0;
 
 			do {
-				hde32s hs;
+				hde64s hs;
 				uint copySize;
 				void* pCopySrc;
 				byte* pOldInst = (byte*)ct->pTarget + oldPos;
