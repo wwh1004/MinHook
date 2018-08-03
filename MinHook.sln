@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27924.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinHook", "MinHook\MinHook.csproj", "{0B312C97-0A9F-418B-851F-7DC84AA05364}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinHook.Test", "MinHook.Test\MinHook.Test.csproj", "{66A2D033-7C7D-4CED-B96B-3DB0E4B4F5B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0B312C97-0A9F-418B-851F-7DC84AA05364}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B312C97-0A9F-418B-851F-7DC84AA05364}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B312C97-0A9F-418B-851F-7DC84AA05364}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66A2D033-7C7D-4CED-B96B-3DB0E4B4F5B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66A2D033-7C7D-4CED-B96B-3DB0E4B4F5B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66A2D033-7C7D-4CED-B96B-3DB0E4B4F5B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66A2D033-7C7D-4CED-B96B-3DB0E4B4F5B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
