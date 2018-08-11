@@ -18,21 +18,23 @@ namespace MinHooks {
 				throw new ArgumentNullException(nameof(pTarget));
 			if (pDetour == null)
 				throw new ArgumentNullException(nameof(pDetour));
-			if (pOriginalStub == null)
-				throw new ArgumentNullException(nameof(pOriginalStub));
 
 			MH_STATUS status;
 			void* pOriginal;
 
 			_pTarget = pTarget;
-			_pOriginalStub = pOriginalStub;
 			status = MH_CreateHook(pTarget, pDetour, &pOriginal);
 			if (status != MH_STATUS.MH_OK)
 				throw new InvalidOperationException(MH_StatusToString(status));
+			if (pOriginalStub == null)
+				return;
+			_pOriginalStub = pOriginalStub;
 			status = MH_CreateHook(pOriginalStub, pOriginal, null);
 			if (status != MH_STATUS.MH_OK)
 				throw new InvalidOperationException(MH_StatusToString(status));
 		}
+
+		public static MinHook Create(MethodBase target, MethodBase detour) => Create(GetMethodAddress(target), GetMethodAddress(detour), IntPtr.Zero);
 
 		public static MinHook Create(MethodBase target, MethodBase detour, MethodBase originalStub) => Create(GetMethodAddress(target), GetMethodAddress(detour), GetMethodAddress(originalStub));
 
@@ -55,9 +57,9 @@ namespace MinHooks {
 			return method.MethodHandle.GetFunctionPointer();
 		}
 
-		public bool Enable() => MH_EnableHook(_pOriginalStub) == MH_STATUS.MH_OK && MH_EnableHook(_pTarget) == MH_STATUS.MH_OK;
+		public bool Enable() => (_pOriginalStub == null ? true : MH_EnableHook(_pOriginalStub) == MH_STATUS.MH_OK) && MH_EnableHook(_pTarget) == MH_STATUS.MH_OK;
 
-		public bool Disable() => MH_DisableHook(_pTarget) == MH_STATUS.MH_OK && MH_DisableHook(_pOriginalStub) == MH_STATUS.MH_OK;
+		public bool Disable() => MH_DisableHook(_pTarget) == MH_STATUS.MH_OK && (_pOriginalStub == null ? true : MH_DisableHook(_pOriginalStub) == MH_STATUS.MH_OK);
 
 		public void Dispose() {
 			if (_isDisposed)
@@ -65,7 +67,8 @@ namespace MinHooks {
 
 			Disable();
 			MH_RemoveHook(_pTarget);
-			MH_RemoveHook(_pOriginalStub);
+			if (_pOriginalStub != null)
+				MH_RemoveHook(_pOriginalStub);
 			_isDisposed = true;
 		}
 	}
