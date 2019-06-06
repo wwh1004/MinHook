@@ -6,9 +6,7 @@ using static MinHooks.MinHookNative;
 namespace MinHooks {
 	public sealed unsafe class MinHook : IDisposable {
 		private readonly void* _pTarget;
-
 		private readonly void* _pOriginalStub;
-
 		private bool _isDisposed;
 
 		static MinHook() => MH_Initialize();
@@ -34,11 +32,17 @@ namespace MinHooks {
 				throw new InvalidOperationException(MH_StatusToString(status));
 		}
 
-		public static MinHook Create(MethodBase target, MethodBase detour) => Create(GetMethodAddress(target), GetMethodAddress(detour), IntPtr.Zero);
+		public static MinHook Create(MethodBase target, MethodBase detour) {
+			return Create(GetMethodAddress(target), GetMethodAddress(detour), IntPtr.Zero);
+		}
 
-		public static MinHook Create(MethodBase target, MethodBase detour, MethodBase originalStub) => Create(GetMethodAddress(target), GetMethodAddress(detour), GetMethodAddress(originalStub));
+		public static MinHook Create(MethodBase target, MethodBase detour, MethodBase originalStub) {
+			return Create(GetMethodAddress(target), GetMethodAddress(detour), GetMethodAddress(originalStub));
+		}
 
-		public static MinHook Create(IntPtr pTarget, IntPtr pDetour, IntPtr pOriginalStub) => Create((void*)pTarget, (void*)pDetour, (void*)pOriginalStub);
+		public static MinHook Create(IntPtr pTarget, IntPtr pDetour, IntPtr pOriginalStub) {
+			return Create((void*)pTarget, (void*)pDetour, (void*)pOriginalStub);
+		}
 
 		public static MinHook Create(void* pTarget, void* pDetour, void* pOriginalStub) {
 			try {
@@ -57,9 +61,13 @@ namespace MinHooks {
 			return method.MethodHandle.GetFunctionPointer();
 		}
 
-		public bool Enable() => (_pOriginalStub == null ? true : MH_EnableHook(_pOriginalStub) == MH_STATUS.MH_OK) && MH_EnableHook(_pTarget) == MH_STATUS.MH_OK;
+		public bool Enable() {
+			return (_pOriginalStub == null ? true : MH_EnableHook(_pOriginalStub) == MH_STATUS.MH_OK) && MH_EnableHook(_pTarget) == MH_STATUS.MH_OK;
+		}
 
-		public bool Disable() => MH_DisableHook(_pTarget) == MH_STATUS.MH_OK && (_pOriginalStub == null ? true : MH_DisableHook(_pOriginalStub) == MH_STATUS.MH_OK);
+		public bool Disable() {
+			return MH_DisableHook(_pTarget) == MH_STATUS.MH_OK && (_pOriginalStub == null ? true : MH_DisableHook(_pOriginalStub) == MH_STATUS.MH_OK);
+		}
 
 		public void Dispose() {
 			if (_isDisposed)

@@ -39,7 +39,6 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="buffer.c.cs" />
     <Compile Include="buffer.h.cs" />
@@ -50,9 +49,9 @@
     <Compile Include="Hde\table32.h.cs" />
     <Compile Include="Hde\table64.h.cs" />
     <Compile Include="hook.c.cs" />
+    <Compile Include="hook.h.cs" />
     <Compile Include="trampoline.c.cs" />
     <Compile Include="trampoline.h.cs" />
-    <Compile Include="hook.h.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -34,7 +34,9 @@ using static MinHooks.NativeMethods;
 
 namespace MinHooks {
 	internal static unsafe partial class Trampoline {
-		private static uint HDE_DISASM(void* code, void* hs) => WIN64 ? hde64_disasm(code, (hde64s*)hs) : hde32_disasm(code, (hde32s*)hs);
+		private static uint HDE_DISASM(void* code, void* hs) {
+			return WIN64 ? hde64_disasm(code, (hde64s*)hs) : hde32_disasm(code, (hde32s*)hs);
+		}
 
 		// Maximum size of a trampoline function.
 		private static byte TRAMPOLINE_MAX_SIZE = WIN64 ? (byte)(MEMORY_SLOT_SIZE - sizeof(JMP_ABS)) : MEMORY_SLOT_SIZE;

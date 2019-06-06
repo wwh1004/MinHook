@@ -506,11 +506,12 @@ namespace MinHooks {
 		}
 
 		//-------------------------------------------------------------------------
-		private static void LeaveSpinLock() =>
+		private static void LeaveSpinLock() {
 			// No need to generate a memory barrier here, since InterlockedExchange()
 			// generates a full memory barrier itself.
 
 			Interlocked.Exchange(ref g_isLocked, FALSE);
+		}
 
 		//-------------------------------------------------------------------------
 		public static MH_STATUS MH_Initialize() {
@@ -774,10 +775,14 @@ namespace MinHooks {
 		}
 
 		//-------------------------------------------------------------------------
-		public static MH_STATUS MH_EnableHook(void* pTarget) => EnableHook(pTarget, TRUE);
+		public static MH_STATUS MH_EnableHook(void* pTarget) {
+			return EnableHook(pTarget, TRUE);
+		}
 
 		//-------------------------------------------------------------------------
-		public static MH_STATUS MH_DisableHook(void* pTarget) => EnableHook(pTarget, FALSE);
+		public static MH_STATUS MH_DisableHook(void* pTarget) {
+			return EnableHook(pTarget, FALSE);
+		}
 
 		//-------------------------------------------------------------------------
 		private static MH_STATUS QueueHook(void* pTarget, uint queueEnable) {
@@ -811,10 +816,14 @@ namespace MinHooks {
 		}
 
 		//-------------------------------------------------------------------------
-		public static MH_STATUS MH_QueueEnableHook(void* pTarget) => QueueHook(pTarget, TRUE);
+		public static MH_STATUS MH_QueueEnableHook(void* pTarget) {
+			return QueueHook(pTarget, TRUE);
+		}
 
 		//-------------------------------------------------------------------------
-		public static MH_STATUS MH_QueueDisableHook(void* pTarget) => QueueHook(pTarget, FALSE);
+		public static MH_STATUS MH_QueueDisableHook(void* pTarget) {
+			return QueueHook(pTarget, FALSE);
+		}
 
 		//-------------------------------------------------------------------------
 		public static MH_STATUS MH_ApplyQueued() {
@@ -876,7 +885,9 @@ namespace MinHooks {
 		}
 
 		//-------------------------------------------------------------------------
-		public static MH_STATUS MH_CreateHookApi(string pszModule, string pszProcName, void* pDetour, void** ppOriginal) => MH_CreateHookApiEx(pszModule, pszProcName, pDetour, ppOriginal, null);
+		public static MH_STATUS MH_CreateHookApi(string pszModule, string pszProcName, void* pDetour, void** ppOriginal) {
+			return MH_CreateHookApiEx(pszModule, pszProcName, pDetour, ppOriginal, null);
+		}
 
 		//-------------------------------------------------------------------------
 		public static string MH_StatusToString(MH_STATUS status) {
