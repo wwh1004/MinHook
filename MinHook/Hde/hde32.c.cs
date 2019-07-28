@@ -5,9 +5,9 @@
  *
  */
 
-using static MinHooks.Hde.Table32;
+using static MinHooking.Hde.Table32;
 
-namespace MinHooks.Hde {
+namespace MinHooking.Hde {
 	internal static unsafe partial class Hde32 {
 		public static uint hde32_disasm(void* code, hde32s* hs) {
 			byte x;

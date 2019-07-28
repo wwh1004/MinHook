@@ -5,9 +5,9 @@
  *
  */
 
-using static MinHooks.Hde.Table64;
+using static MinHooking.Hde.Table64;
 
-namespace MinHooks.Hde {
+namespace MinHooking.Hde {
 	internal static unsafe partial class Hde64 {
 		public static uint hde64_disasm(void* code, hde64s* hs) {
 			byte x;

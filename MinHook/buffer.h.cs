@@ -26,9 +26,9 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using static MinHooks.NativeMethods;
+using static MinHooking.NativeMethods;
 
-namespace MinHooks {
+namespace MinHooking {
 	internal static unsafe partial class Buffer {
 		// Size of each memory slot.
 		public static readonly byte MEMORY_SLOT_SIZE = WIN64 ? (byte)64 : (byte)32;

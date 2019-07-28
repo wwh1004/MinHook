@@ -9,7 +9,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace MinHooks.Hde {
+namespace MinHooking.Hde {
 	internal static unsafe partial class Hde64 {
 		public const uint F_MODRM = 0x00000001;
 		public const uint F_SIB = 0x00000002;

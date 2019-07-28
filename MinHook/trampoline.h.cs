@@ -28,7 +28,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace MinHooks {
+namespace MinHooking {
 	internal static unsafe partial class Trampoline {
 		// Structs for writing x86/x64 instructions.
 

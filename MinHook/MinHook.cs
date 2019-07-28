@@ -1,35 +1,19 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using static MinHooks.MinHookNative;
+using static MinHooking.MinHookNative;
 
-namespace MinHooks {
+namespace MinHooking {
 	public sealed unsafe class MinHook : IDisposable {
-		private readonly void* _pTarget;
-		private readonly void* _pOriginalStub;
+		private void* _pTarget;
+		private void* _pOriginalStub;
 		private bool _isDisposed;
 
-		static MinHook() => MH_Initialize();
+		static MinHook() {
+			MH_Initialize();
+		}
 
-		private MinHook(void* pTarget, void* pDetour, void* pOriginalStub) {
-			if (pTarget == null)
-				throw new ArgumentNullException(nameof(pTarget));
-			if (pDetour == null)
-				throw new ArgumentNullException(nameof(pDetour));
-
-			MH_STATUS status;
-			void* pOriginal;
-
-			_pTarget = pTarget;
-			status = MH_CreateHook(pTarget, pDetour, &pOriginal);
-			if (status != MH_STATUS.MH_OK)
-				throw new InvalidOperationException(MH_StatusToString(status));
-			if (pOriginalStub == null)
-				return;
-			_pOriginalStub = pOriginalStub;
-			status = MH_CreateHook(pOriginalStub, pOriginal, null);
-			if (status != MH_STATUS.MH_OK)
-				throw new InvalidOperationException(MH_StatusToString(status));
+		private MinHook() {
 		}
 
 		public static MinHook Create(MethodBase target, MethodBase detour) {
@@ -45,16 +29,32 @@ namespace MinHooks {
 		}
 
 		public static MinHook Create(void* pTarget, void* pDetour, void* pOriginalStub) {
-			try {
-				return new MinHook(pTarget, pDetour, pOriginalStub);
-			}
-			catch (InvalidOperationException) {
+			if (pTarget is null)
+				throw new ArgumentNullException(nameof(pTarget));
+			if (pDetour is null)
+				throw new ArgumentNullException(nameof(pDetour));
+			if (pOriginalStub is null)
+				throw new ArgumentNullException(nameof(pOriginalStub));
+
+			MH_STATUS status;
+			void* pOriginal;
+
+			status = MH_CreateHook(pTarget, pDetour, &pOriginal);
+			if (status != MH_STATUS.MH_OK)
+				return null;
+			status = MH_CreateHook(pOriginalStub, pOriginal, null);
+			if (status != MH_STATUS.MH_OK) {
+				MH_RemoveHook(pTarget);
 				return null;
 			}
+			return new MinHook {
+				_pTarget = pTarget,
+				_pOriginalStub = pOriginalStub
+			};
 		}
 
 		public static IntPtr GetMethodAddress(MethodBase method) {
-			if (method == null)
+			if (method is null)
 				throw new ArgumentNullException(nameof(method));
 
 			RuntimeHelpers.PrepareMethod(method.MethodHandle);
@@ -62,11 +62,11 @@ namespace MinHooks {
 		}
 
 		public bool Enable() {
-			return (_pOriginalStub == null ? true : MH_EnableHook(_pOriginalStub) == MH_STATUS.MH_OK) && MH_EnableHook(_pTarget) == MH_STATUS.MH_OK;
+			return (_pOriginalStub is null ? true : MH_EnableHook(_pOriginalStub) == MH_STATUS.MH_OK) && MH_EnableHook(_pTarget) == MH_STATUS.MH_OK;
 		}
 
 		public bool Disable() {
-			return MH_DisableHook(_pTarget) == MH_STATUS.MH_OK && (_pOriginalStub == null ? true : MH_DisableHook(_pOriginalStub) == MH_STATUS.MH_OK);
+			return MH_DisableHook(_pTarget) == MH_STATUS.MH_OK && (_pOriginalStub is null ? true : MH_DisableHook(_pOriginalStub) == MH_STATUS.MH_OK);
 		}
 
 		public void Dispose() {
@@ -75,7 +75,7 @@ namespace MinHooks {
 
 			Disable();
 			MH_RemoveHook(_pTarget);
-			if (_pOriginalStub != null)
+			if (!(_pOriginalStub is null))
 				MH_RemoveHook(_pOriginalStub);
 			_isDisposed = true;
 		}

@@ -26,13 +26,13 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using MinHooks.Hde;
-using static MinHooks.Buffer;
-using static MinHooks.Hde.Hde32;
-using static MinHooks.Hde.Hde64;
-using static MinHooks.NativeMethods;
+using MinHooking.Hde;
+using static MinHooking.Buffer;
+using static MinHooking.Hde.Hde32;
+using static MinHooking.Hde.Hde64;
+using static MinHooking.NativeMethods;
 
-namespace MinHooks {
+namespace MinHooking {
 	internal static unsafe partial class Trampoline {
 		private static uint HDE_DISASM(void* code, void* hs) {
 			return WIN64 ? hde64_disasm(code, (hde64s*)hs) : hde32_disasm(code, (hde32s*)hs);

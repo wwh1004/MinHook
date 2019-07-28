@@ -26,7 +26,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace MinHooks {
+namespace MinHooking {
 	public static unsafe partial class MinHookNative {
 		// MinHook Error Codes.
 		public enum MH_STATUS {

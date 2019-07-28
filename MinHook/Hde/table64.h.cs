@@ -7,7 +7,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace MinHooks.Hde {
+namespace MinHooking.Hde {
 	internal static unsafe class Table64 {
 		public const byte C_NONE = 0x00;
 		public const byte C_MODRM = 0x01;

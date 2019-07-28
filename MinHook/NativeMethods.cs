@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MinHooks {
+namespace MinHooking {
 	internal static unsafe class NativeMethods {
 		public const byte FALSE = 0;
 
