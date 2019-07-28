@@ -160,7 +160,7 @@ namespace MinHooking {
 			MEMORY_BLOCK* pBlock;
 			byte* minAddr = null;
 			byte* maxAddr = null;
-			SYSTEM_INFO si = default(SYSTEM_INFO);
+			SYSTEM_INFO si = default;
 
 			if (WIN64) {
 				GetSystemInfo(&si);

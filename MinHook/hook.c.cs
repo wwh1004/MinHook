@@ -26,6 +26,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using static MinHooking.Buffer;
@@ -33,7 +34,7 @@ using static MinHooking.NativeMethods;
 using static MinHooking.Trampoline;
 
 namespace MinHooking {
-	public static unsafe partial class MinHookNative {
+	public static unsafe partial class Hook {
 		// Initial capacity of the HOOK_ENTRY buffer.
 		private const byte INITIAL_HOOK_CAPACITY = 32;
 
@@ -54,21 +55,6 @@ namespace MinHooking {
 		private const uint THREAD_ACCESS = 0x5a;
 
 		// Hook information.
-		//[StructLayout(LayoutKind.Sequential)]
-		//private struct HOOK_ENTRY {
-		//	public void* pTarget;        // Address of the target function.
-		//	public void* pDetour;        // Address of the detour or relay function.
-		//	public void* pTrampoline;    // Address of the trampoline function.
-		//	public fixed byte backup[8]; // Original prologue of the target function.
-
-		//	public byte patchAbove; // Uses the hot patch area.
-		//	public byte isEnabled; // Enabled.
-		//	public byte queueEnable; // Queued for enabling/disabling when != isEnabled.
-
-		//	public uint nIP;         // Count of the instruction boundaries.
-		//	public fixed byte oldIPs[8]; // Instruction boundaries of the target function.
-		//	public fixed byte newIPs[8]; // Instruction boundaries of the trampoline function.
-		//}
 		[StructLayout(LayoutKind.Sequential)]
 		private struct HOOK_ENTRY {
 			public void* pTarget;        // Address of the target function.
@@ -130,6 +116,8 @@ namespace MinHooking {
 		}
 
 		private static HOOKS g_hooks;
+
+		public static bool IsDebuggable = true;
 
 		//-------------------------------------------------------------------------
 		// Returns INVALID_HOOK_POS if not found.
@@ -220,7 +208,7 @@ namespace MinHooking {
 			// If the thread suspended in the overwritten area,
 			// move IP to the proper address.
 
-			CONTEXT32 c = default(CONTEXT32);
+			CONTEXT32 c = default;
 			void* pIP;
 			uint count;
 
@@ -276,7 +264,7 @@ namespace MinHooking {
 			// If the thread suspended in the overwritten area,
 			// move IP to the proper address.
 
-			CONTEXT64 c = default(CONTEXT64);
+			CONTEXT64 c = default;
 			void* pIP;
 			uint count;
 
@@ -370,7 +358,9 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		private static void Freeze(FROZEN_THREADS* pThreads, uint pos, uint action) {
-#if !DEBUG
+			if (IsDebuggable)
+				return;
+
 			pThreads->pItems = null;
 			pThreads->capacity = 0;
 			pThreads->size = 0;
@@ -390,12 +380,13 @@ namespace MinHooking {
 					}
 				}
 			}
-#endif
 		}
 
 		//-------------------------------------------------------------------------
 		private static void Unfreeze(FROZEN_THREADS* pThreads) {
-#if !DEBUG
+			if (IsDebuggable)
+				return;
+
 			if (!(pThreads->pItems is null)) {
 				uint i;
 				for (i = 0; i < pThreads->size; ++i) {
@@ -408,7 +399,6 @@ namespace MinHooking {
 
 				HeapFree(g_hHeap, 0, pThreads->pItems);
 			}
-#endif
 		}
 
 		//-------------------------------------------------------------------------
@@ -540,10 +530,9 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		public static MH_STATUS MH_Uninitialize() {
-			MH_STATUS status = MH_STATUS.MH_OK;
-
 			EnterSpinLock();
 
+			MH_STATUS status;
 			if (!(g_hHeap is null)) {
 				status = EnableAllHooksLL(FALSE);
 				if (status == MH_STATUS.MH_OK) {
@@ -893,35 +882,35 @@ namespace MinHooking {
 		public static string MH_StatusToString(MH_STATUS status) {
 			switch (status) {
 			case MH_STATUS.MH_UNKNOWN:
-				return nameof(MH_STATUS.MH_UNKNOWN);
+				return "Unknown";
 			case MH_STATUS.MH_OK:
-				return nameof(MH_STATUS.MH_OK);
+				return "Succeed";
 			case MH_STATUS.MH_ERROR_ALREADY_INITIALIZED:
-				return nameof(MH_STATUS.MH_ERROR_ALREADY_INITIALIZED);
+				return "Already initialized";
 			case MH_STATUS.MH_ERROR_NOT_INITIALIZED:
-				return nameof(MH_STATUS.MH_ERROR_NOT_INITIALIZED);
+				return "Not initialized";
 			case MH_STATUS.MH_ERROR_ALREADY_CREATED:
-				return nameof(MH_STATUS.MH_ERROR_NOT_CREATED);
+				return "Already created";
 			case MH_STATUS.MH_ERROR_NOT_CREATED:
-				return nameof(MH_STATUS.MH_ERROR_NOT_CREATED);
+				return "Not created";
 			case MH_STATUS.MH_ERROR_ENABLED:
-				return nameof(MH_STATUS.MH_ERROR_ENABLED);
+				return "Already enabled";
 			case MH_STATUS.MH_ERROR_DISABLED:
-				return nameof(MH_STATUS.MH_ERROR_DISABLED);
+				return "Already Disabled";
 			case MH_STATUS.MH_ERROR_NOT_EXECUTABLE:
-				return nameof(MH_STATUS.MH_ERROR_NOT_EXECUTABLE);
+				return "Not executable";
 			case MH_STATUS.MH_ERROR_UNSUPPORTED_FUNCTION:
-				return nameof(MH_STATUS.MH_ERROR_UNSUPPORTED_FUNCTION);
+				return "Unsupported function";
 			case MH_STATUS.MH_ERROR_MEMORY_ALLOC:
-				return nameof(MH_STATUS.MH_ERROR_MEMORY_ALLOC);
+				return "Failed to alloc memory";
 			case MH_STATUS.MH_ERROR_MEMORY_PROTECT:
-				return nameof(MH_STATUS.MH_ERROR_MEMORY_PROTECT);
+				return "Failed to set memory protection";
 			case MH_STATUS.MH_ERROR_MODULE_NOT_FOUND:
-				return nameof(MH_STATUS.MH_ERROR_MODULE_NOT_FOUND);
+				return "Module not found";
 			case MH_STATUS.MH_ERROR_FUNCTION_NOT_FOUND:
-				return nameof(MH_STATUS.MH_ERROR_FUNCTION_NOT_FOUND);
+				return "Function not found";
 			default:
-				return "(unknown)";
+				throw new ArgumentOutOfRangeException(nameof(status));
 			}
 		}
 	}

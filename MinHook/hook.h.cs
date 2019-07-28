@@ -27,7 +27,7 @@
  */
 
 namespace MinHooking {
-	public static unsafe partial class MinHookNative {
+	public static unsafe partial class Hook {
 		// MinHook Error Codes.
 		public enum MH_STATUS {
 			// Unknown error. Should not be returned.

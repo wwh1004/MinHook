@@ -20,41 +20,42 @@ namespace MinHooking.Test {
 
 		private static bool _isDaysLeftDialogShowed;
 
-		private static void Main(string[] args) {
-			MinHook showDialogHook;
-			MinHook runHook;
+		private static void Main() {
+			IMinHook showDialogHook;
+			IMinHook runHook;
 
-			showDialogHook = MinHook.Create(typeof(Form).GetMethod("ShowDialog", new Type[] { typeof(IWin32Window) }), GetMethodByAttribute<ShowDialogAttribute>(), GetMethodByAttribute<ShowDialogOriginalStubAttribute>());
+			Hook.IsDebuggable = true;
+			showDialogHook = MinHookFactory.Create(typeof(Form).GetMethod("ShowDialog", new Type[] { typeof(IWin32Window) }), GetMethodByAttribute<ShowDialogAttribute>(), GetMethodByAttribute<ShowDialogOriginalStubAttribute>());
 			showDialogHook.Enable();
-			runHook = MinHook.Create(typeof(Application).GetMethod("Run", new Type[] { typeof(Form) }), GetMethodByAttribute<RunAttribute>(), GetMethodByAttribute<RunOriginalStubAttribute>());
+			runHook = MinHookFactory.Create(typeof(Application).GetMethod("Run", new Type[] { typeof(Form) }), GetMethodByAttribute<RunAttribute>(), GetMethodByAttribute<RunOriginalStubAttribute>());
 			runHook.Enable();
 
-			using (Form form = new Form { Text = "这个是不该显示的，如果显示了表示Hook失败" })
+			using (Form form = new Form { Text = "这个是不该显示的，如果显示了表示Hook失败", Size = new Size(500, 200) })
 				form.ShowDialog();
 
-			using (Form form = new Form { Text = "这个是应该显示的" })
+			using (Form form = new Form { Text = "这个是应该显示的", Size = new Size(500, 200) })
 				form.ShowDialog();
 
-			using (Form form = new Form { Text = "这里应该显示NCK而不是Trial" }) {
-				form.Controls.Add(new Label { Text = "Trial Edition", Size = new Size(100, 100) });
+			using (Form form = new Form { Text = "这里应该显示NCK而不是Trial", Size = new Size(500, 200) }) {
+				form.Controls.Add(new Label { Text = "Trial Edition", Size = new Size(300, 100) });
 				Application.Run(form);
 			}
 
-			using (Form form = new Form { Text = "这里应该显示NCK而不是Trial" }) {
-				form.Controls.Add(new Label { Text = "Trial Edition", Size = new Size(100, 100) });
+			using (Form form = new Form { Text = "这里应该显示NCK而不是Trial", Size = new Size(500, 200) }) {
+				form.Controls.Add(new Label { Text = "Trial Edition", Size = new Size(300, 100) });
 				form.ShowDialog();
 			}
 
 			showDialogHook.Dispose();
 			runHook.Dispose();
 
-			using (Form form = new Form { Text = "这里应该显示Trial" }) {
-				form.Controls.Add(new Label { Text = "Trial Edition", Size = new Size(100, 100) });
+			using (Form form = new Form { Text = "这里应该显示Trial", Size = new Size(500, 200) }) {
+				form.Controls.Add(new Label { Text = "Trial Edition", Size = new Size(300, 100) });
 				Application.Run(form);
 			}
 
-			using (Form form = new Form { Text = "这里应该显示Trial" }) {
-				form.Controls.Add(new Label { Text = "Trial Edition", Size = new Size(100, 100) });
+			using (Form form = new Form { Text = "这里应该显示Trial", Size = new Size(500, 200) }) {
+				form.Controls.Add(new Label { Text = "Trial Edition", Size = new Size(300, 100) });
 				form.ShowDialog();
 			}
 		}
@@ -92,6 +93,7 @@ namespace MinHooking.Test {
 			RunOriginalStub(mainForm);
 		}
 
+#pragma warning disable IDE0060
 		[ShowDialogOriginalStub]
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		internal static DialogResult ShowDialogOriginalStub(Form self, IWin32Window owner) => throw new InvalidOperationException("Failed in hooking!");
@@ -99,5 +101,6 @@ namespace MinHooking.Test {
 		[RunOriginalStub]
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		internal static void RunOriginalStub(Form mainForm) => throw new InvalidOperationException("Failed in hooking!");
+#pragma warning restore IDE0060
 	}
 }
