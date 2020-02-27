@@ -24,7 +24,7 @@ namespace MinHooking.Test {
 			IMinHook showDialogHook;
 			IMinHook runHook;
 
-			Hook.IsDebuggable = true;
+			Hook.IsFreezeEnabled = true;
 			showDialogHook = MinHookFactory.Create(typeof(Form).GetMethod("ShowDialog", new Type[] { typeof(IWin32Window) }), GetMethodByAttribute<ShowDialogAttribute>(), GetMethodByAttribute<ShowDialogOriginalStubAttribute>());
 			showDialogHook.Enable();
 			runHook = MinHookFactory.Create(typeof(Application).GetMethod("Run", new Type[] { typeof(Form) }), GetMethodByAttribute<RunAttribute>(), GetMethodByAttribute<RunOriginalStubAttribute>());

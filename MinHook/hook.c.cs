@@ -117,7 +117,7 @@ namespace MinHooking {
 
 		private static HOOKS g_hooks;
 
-		public static bool IsDebuggable = true;
+		public static bool IsFreezeEnabled = true;
 
 		//-------------------------------------------------------------------------
 		// Returns INVALID_HOOK_POS if not found.
@@ -358,7 +358,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		private static void Freeze(FROZEN_THREADS* pThreads, uint pos, uint action) {
-			if (IsDebuggable)
+			if (!IsFreezeEnabled)
 				return;
 
 			pThreads->pItems = null;
@@ -384,7 +384,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		private static void Unfreeze(FROZEN_THREADS* pThreads) {
-			if (IsDebuggable)
+			if (!IsFreezeEnabled)
 				return;
 
 			if (!(pThreads->pItems == null)) {
