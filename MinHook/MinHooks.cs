@@ -23,7 +23,7 @@ namespace MinHooking {
 		}
 
 		internal MinHook(void* pTarget) {
-			if (pTarget is null)
+			if (pTarget == null)
 				throw new ArgumentNullException(nameof(pTarget));
 
 			_pTarget = pTarget;
@@ -114,9 +114,9 @@ namespace MinHooking {
 		}
 
 		public static IMinHook Create(void* pTarget, void* pDetour, out void* pOriginal) {
-			if (pTarget is null)
+			if (pTarget == null)
 				throw new ArgumentNullException(nameof(pTarget));
-			if (pDetour is null)
+			if (pDetour == null)
 				throw new ArgumentNullException(nameof(pDetour));
 
 			return MinHook.Create(pTarget, pDetour, out pOriginal);
@@ -143,11 +143,11 @@ namespace MinHooking {
 		}
 
 		public static IMinHook Create(void* pTarget, void* pDetour, void* pOriginalStub) {
-			if (pTarget is null)
+			if (pTarget == null)
 				throw new ArgumentNullException(nameof(pTarget));
-			if (pDetour is null)
+			if (pDetour == null)
 				throw new ArgumentNullException(nameof(pDetour));
-			if (pOriginalStub is null)
+			if (pOriginalStub == null)
 				throw new ArgumentNullException(nameof(pOriginalStub));
 
 			return MinHookManaged.Create(pTarget, pDetour, pOriginalStub);

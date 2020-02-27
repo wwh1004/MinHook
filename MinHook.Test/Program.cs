@@ -6,16 +6,16 @@ using System.Windows.Forms;
 
 namespace MinHooking.Test {
 	internal static unsafe class Program {
-		internal class ShowDialogAttribute : Attribute {
+		internal sealed class ShowDialogAttribute : Attribute {
 		}
 
-		internal class ShowDialogOriginalStubAttribute : Attribute {
+		internal sealed class ShowDialogOriginalStubAttribute : Attribute {
 		}
 
-		internal class RunAttribute : Attribute {
+		internal sealed class RunAttribute : Attribute {
 		}
 
-		internal class RunOriginalStubAttribute : Attribute {
+		internal sealed class RunOriginalStubAttribute : Attribute {
 		}
 
 		private static bool _isDaysLeftDialogShowed;

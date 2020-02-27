@@ -90,7 +90,7 @@ namespace MinHooking {
 			MEMORY_BLOCK* pBlock = g_pMemoryBlocks;
 			g_pMemoryBlocks = null;
 
-			while (!(pBlock is null)) {
+			while (!(pBlock == null)) {
 				MEMORY_BLOCK* pNext = pBlock->pNext;
 				VirtualFree(pBlock, 0, 0x8000);
 				// MEM_RELEASE
@@ -110,7 +110,7 @@ namespace MinHooking {
 
 			while (tryAddr >= pMinAddr) {
 				MEMORY_BASIC_INFORMATION mbi;
-				if (VirtualQuery((void*)tryAddr, &mbi, (uint)sizeof(MEMORY_BASIC_INFORMATION)) is null)
+				if (VirtualQuery((void*)tryAddr, &mbi, (uint)sizeof(MEMORY_BASIC_INFORMATION)) == null)
 					break;
 
 				if (mbi.State == 0x00010000)
@@ -138,7 +138,7 @@ namespace MinHooking {
 
 			while (tryAddr <= pMaxAddr) {
 				MEMORY_BASIC_INFORMATION mbi;
-				if (VirtualQuery((void*)tryAddr, &mbi, (uint)sizeof(MEMORY_BASIC_INFORMATION)) is null)
+				if (VirtualQuery((void*)tryAddr, &mbi, (uint)sizeof(MEMORY_BASIC_INFORMATION)) == null)
 					break;
 
 				if (mbi.State == 0x00010000)
@@ -179,14 +179,14 @@ namespace MinHooking {
 			}
 
 			// Look the registered blocks for a reachable one.
-			for (pBlock = g_pMemoryBlocks; !(pBlock is null); pBlock = pBlock->pNext) {
+			for (pBlock = g_pMemoryBlocks; !(pBlock == null); pBlock = pBlock->pNext) {
 				if (WIN64) {
 					// Ignore the blocks too far.
 					if ((byte*)pBlock < minAddr || (byte*)pBlock >= maxAddr)
 						continue;
 				}
 				// The block has at least one unused slot.
-				if (!(pBlock->pFree is null))
+				if (!(pBlock->pFree == null))
 					return pBlock;
 			}
 
@@ -196,29 +196,29 @@ namespace MinHooking {
 					void* pAlloc = pOrigin;
 					while (pAlloc >= minAddr) {
 						pAlloc = FindPrevFreeRegion(pAlloc, (void*)minAddr, si.dwAllocationGranularity);
-						if (pAlloc is null)
+						if (pAlloc == null)
 							break;
 
 						pBlock = (MEMORY_BLOCK*)VirtualAlloc(
 							pAlloc, MEMORY_BLOCK_SIZE, 0x3000, 0x40);
 						// MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE
-						if (!(pBlock is null))
+						if (!(pBlock == null))
 							break;
 					}
 				}
 
 				// Alloc a new block below if not found.
-				if (pBlock is null) {
+				if (pBlock == null) {
 					void* pAlloc = pOrigin;
 					while (pAlloc <= maxAddr) {
 						pAlloc = FindNextFreeRegion(pAlloc, (void*)maxAddr, si.dwAllocationGranularity);
-						if (pAlloc is null)
+						if (pAlloc == null)
 							break;
 
 						pBlock = (MEMORY_BLOCK*)VirtualAlloc(
 							pAlloc, MEMORY_BLOCK_SIZE, 0x3000, 0x40);
 						// MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE
-						if (!(pBlock is null))
+						if (!(pBlock == null))
 							break;
 					}
 				}
@@ -230,7 +230,7 @@ namespace MinHooking {
 				// MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE
 			}
 
-			if (!(pBlock is null)) {
+			if (!(pBlock == null)) {
 				// Build a linked list of all the slots.
 				MEMORY_SLOT* pSlot = (MEMORY_SLOT*)pBlock + 1;
 				pBlock->pFree = null;
@@ -252,7 +252,7 @@ namespace MinHooking {
 		public static void* AllocateBuffer(void* pOrigin) {
 			MEMORY_SLOT* pSlot;
 			MEMORY_BLOCK* pBlock = GetMemoryBlock(pOrigin);
-			if (pBlock is null)
+			if (pBlock == null)
 				return null;
 
 			// Remove an unused slot from the list.
@@ -268,7 +268,7 @@ namespace MinHooking {
 			MEMORY_BLOCK* pPrev = null;
 			byte* pTargetBlock = (byte*)((ulong)pBuffer / MEMORY_BLOCK_SIZE * MEMORY_BLOCK_SIZE);
 
-			while (!(pBlock is null)) {
+			while (!(pBlock == null)) {
 				if ((byte*)pBlock == pTargetBlock) {
 					MEMORY_SLOT* pSlot = (MEMORY_SLOT*)pBuffer;
 					// Restore the released slot to the list.
@@ -278,7 +278,7 @@ namespace MinHooking {
 
 					// Free if unused.
 					if (pBlock->usedCount == 0) {
-						if (!(pPrev is null))
+						if (!(pPrev == null))
 							pPrev->pNext = pBlock->pNext;
 						else
 							g_pMemoryBlocks = pBlock->pNext;

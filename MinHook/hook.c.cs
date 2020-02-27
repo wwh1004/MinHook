@@ -133,17 +133,17 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		private static HOOK_ENTRY* AddHookEntry() {
-			if (g_hooks.pItems is null) {
+			if (g_hooks.pItems == null) {
 				g_hooks.capacity = INITIAL_HOOK_CAPACITY;
 				g_hooks.pItems = (HOOK_ENTRY*)HeapAlloc(
 					g_hHeap, 0, g_hooks.capacity * (uint)sizeof(HOOK_ENTRY));
-				if (g_hooks.pItems is null)
+				if (g_hooks.pItems == null)
 					return null;
 			}
 			else if (g_hooks.size >= g_hooks.capacity) {
 				HOOK_ENTRY* p = (HOOK_ENTRY*)HeapReAlloc(
 					g_hHeap, 0, g_hooks.pItems, g_hooks.capacity * 2 * (uint)sizeof(HOOK_ENTRY));
-				if (p is null)
+				if (p == null)
 					return null;
 
 				g_hooks.capacity *= 2;
@@ -163,7 +163,7 @@ namespace MinHooking {
 			if (g_hooks.capacity / 2 >= INITIAL_HOOK_CAPACITY && g_hooks.capacity / 2 >= g_hooks.size) {
 				HOOK_ENTRY* p = (HOOK_ENTRY*)HeapReAlloc(
 					g_hHeap, 0, g_hooks.pItems, g_hooks.capacity / 2 * (uint)sizeof(HOOK_ENTRY));
-				if (p is null)
+				if (p == null)
 					return;
 
 				g_hooks.capacity /= 2;
@@ -253,7 +253,7 @@ namespace MinHooking {
 				else
 					ip = FindOldIP(pHook, *(byte**)pIP);
 
-				if (!(ip is null)) {
+				if (!(ip == null)) {
 					*(byte**)pIP = ip;
 					SetThreadContext(hThread, &c);
 				}
@@ -309,7 +309,7 @@ namespace MinHooking {
 				else
 					ip = FindOldIP(pHook, *(byte**)pIP);
 
-				if (!(ip is null)) {
+				if (!(ip == null)) {
 					*(byte**)pIP = ip;
 					SetThreadContext(hThread, &c);
 				}
@@ -330,17 +330,17 @@ namespace MinHooking {
 							// FIELD_OFFSET(THREADENTRY32, th32OwnerProcessID) + sizeof(uint)
 							&& te.th32OwnerProcessID == GetCurrentProcessId()
 							&& te.th32ThreadID != GetCurrentThreadId()) {
-							if (pThreads->pItems is null) {
+							if (pThreads->pItems == null) {
 								pThreads->capacity = INITIAL_THREAD_CAPACITY;
 								pThreads->pItems
 									= (uint*)HeapAlloc(g_hHeap, 0, pThreads->capacity * sizeof(uint));
-								if (pThreads->pItems is null)
+								if (pThreads->pItems == null)
 									break;
 							}
 							else if (pThreads->size >= pThreads->capacity) {
 								uint* p = (uint*)HeapReAlloc(
 									g_hHeap, 0, pThreads->pItems, pThreads->capacity * 2 * sizeof(uint));
-								if (p is null)
+								if (p == null)
 									break;
 
 								pThreads->capacity *= 2;
@@ -366,11 +366,11 @@ namespace MinHooking {
 			pThreads->size = 0;
 			EnumerateThreads(pThreads);
 
-			if (!(pThreads->pItems is null)) {
+			if (!(pThreads->pItems == null)) {
 				uint i;
 				for (i = 0; i < pThreads->size; ++i) {
 					void* hThread = OpenThread(THREAD_ACCESS, FALSE, pThreads->pItems[i]);
-					if (!(hThread is null)) {
+					if (!(hThread == null)) {
 						SuspendThread(hThread);
 						if (WIN64)
 							ProcessThreadIPs64(hThread, pos, action);
@@ -387,11 +387,11 @@ namespace MinHooking {
 			if (IsDebuggable)
 				return;
 
-			if (!(pThreads->pItems is null)) {
+			if (!(pThreads->pItems == null)) {
 				uint i;
 				for (i = 0; i < pThreads->size; ++i) {
 					void* hThread = OpenThread(THREAD_ACCESS, FALSE, pThreads->pItems[i]);
-					if (!(hThread is null)) {
+					if (!(hThread == null)) {
 						ResumeThread(hThread);
 						CloseHandle(hThread);
 					}
@@ -509,9 +509,9 @@ namespace MinHooking {
 
 			EnterSpinLock();
 
-			if (g_hHeap is null) {
+			if (g_hHeap == null) {
 				g_hHeap = HeapCreate(0, 0, 0);
-				if (!(g_hHeap is null)) {
+				if (!(g_hHeap == null)) {
 					// Initialize the internal function buffer.
 					InitializeBuffer();
 				}
@@ -533,7 +533,7 @@ namespace MinHooking {
 			EnterSpinLock();
 
 			MH_STATUS status;
-			if (!(g_hHeap is null)) {
+			if (!(g_hHeap == null)) {
 				status = EnableAllHooksLL(FALSE);
 				if (status == MH_STATUS.MH_OK) {
 					// Free the internal function buffer.
@@ -568,12 +568,12 @@ namespace MinHooking {
 
 			EnterSpinLock();
 
-			if (!(g_hHeap is null)) {
+			if (!(g_hHeap == null)) {
 				if (IsExecutableAddress(pTarget) != 0 && IsExecutableAddress(pDetour) != 0) {
 					uint pos = FindHookEntry(pTarget);
 					if (pos == INVALID_HOOK_POS) {
 						void* pBuffer = AllocateBuffer(pTarget);
-						if (!(pBuffer is null)) {
+						if (!(pBuffer == null)) {
 							if (WIN64) {
 								TRAMPOLINE64 ct;
 
@@ -582,7 +582,7 @@ namespace MinHooking {
 								ct.pTrampoline = pBuffer;
 								if (CreateTrampolineFunction64(&ct) != 0) {
 									HOOK_ENTRY* pHook = AddHookEntry();
-									if (!(pHook is null)) {
+									if (!(pHook == null)) {
 										pHook->pTarget = ct.pTarget;
 										pHook->pDetour = ct.pRelay;
 										pHook->pTrampoline = ct.pTrampoline;
@@ -605,7 +605,7 @@ namespace MinHooking {
 											memcpy(pHook->backup, pTarget, (uint)sizeof(JMP_REL));
 										}
 
-										if (!(ppOriginal is null))
+										if (!(ppOriginal == null))
 											*ppOriginal = pHook->pTrampoline;
 									}
 									else {
@@ -628,7 +628,7 @@ namespace MinHooking {
 								ct.pTrampoline = pBuffer;
 								if (CreateTrampolineFunction32(&ct) != 0) {
 									HOOK_ENTRY* pHook = AddHookEntry();
-									if (!(pHook is null)) {
+									if (!(pHook == null)) {
 										pHook->pTarget = ct.pTarget;
 										pHook->pDetour = ct.pDetour;
 										pHook->pTrampoline = ct.pTrampoline;
@@ -651,7 +651,7 @@ namespace MinHooking {
 											memcpy(pHook->backup, pTarget, (uint)sizeof(JMP_REL));
 										}
 
-										if (!(ppOriginal is null))
+										if (!(ppOriginal == null))
 											*ppOriginal = pHook->pTrampoline;
 									}
 									else {
@@ -694,7 +694,7 @@ namespace MinHooking {
 
 			EnterSpinLock();
 
-			if (!(g_hHeap is null)) {
+			if (!(g_hHeap == null)) {
 				uint pos = FindHookEntry(pTarget);
 				if (pos != INVALID_HOOK_POS) {
 					if (g_hooks.pItems[pos].isEnabled != 0) {
@@ -730,7 +730,7 @@ namespace MinHooking {
 
 			EnterSpinLock();
 
-			if (!(g_hHeap is null)) {
+			if (!(g_hHeap == null)) {
 				if (pTarget == MH_ALL_HOOKS) {
 					status = EnableAllHooksLL(enable);
 				}
@@ -779,7 +779,7 @@ namespace MinHooking {
 
 			EnterSpinLock();
 
-			if (!(g_hHeap is null)) {
+			if (!(g_hHeap == null)) {
 				if (pTarget == MH_ALL_HOOKS) {
 					uint i;
 					for (i = 0; i < g_hooks.size; ++i)
@@ -821,7 +821,7 @@ namespace MinHooking {
 
 			EnterSpinLock();
 
-			if (!(g_hHeap is null)) {
+			if (!(g_hHeap == null)) {
 				for (i = 0; i < g_hooks.size; ++i) {
 					if (g_hooks.pItems[i].isEnabled != g_hooks.pItems[i].queueEnable) {
 						first = i;
@@ -860,14 +860,14 @@ namespace MinHooking {
 			void* pTarget;
 
 			hModule = GetModuleHandle(pszModule);
-			if (hModule is null)
+			if (hModule == null)
 				return MH_STATUS.MH_ERROR_MODULE_NOT_FOUND;
 
 			pTarget = GetProcAddress(hModule, pszProcName);
-			if (pTarget is null)
+			if (pTarget == null)
 				return MH_STATUS.MH_ERROR_FUNCTION_NOT_FOUND;
 
-			if (!(ppTarget is null))
+			if (!(ppTarget == null))
 				*ppTarget = pTarget;
 
 			return MH_CreateHook(pTarget, pDetour, ppOriginal);

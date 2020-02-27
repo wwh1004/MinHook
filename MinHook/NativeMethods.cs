@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 
 namespace MinHooking {
@@ -7,7 +6,7 @@ namespace MinHooking {
 
 		public const byte TRUE = 1;
 
-		public static bool WIN64 = IntPtr.Size == 8;
+		public static bool WIN64 = sizeof(void*) == 8;
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct MEMORY_BASIC_INFORMATION {
