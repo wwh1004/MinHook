@@ -80,7 +80,7 @@ namespace MinHooking {
 			ct->nIP = 0;
 
 			do {
-				hde64s hs;
+				hde32s hs;
 				uint copySize;
 				void* pCopySrc;
 				byte* pOldInst = (byte*)ct->pTarget + oldPos;
