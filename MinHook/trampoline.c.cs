@@ -39,7 +39,7 @@ namespace MinHooking {
 		}
 
 		// Maximum size of a trampoline function.
-		private static byte TRAMPOLINE_MAX_SIZE = WIN64 ? (byte)(MEMORY_SLOT_SIZE - sizeof(JMP_ABS)) : MEMORY_SLOT_SIZE;
+		private static readonly byte TRAMPOLINE_MAX_SIZE = WIN64 ? (byte)(MEMORY_SLOT_SIZE - sizeof(JMP_ABS)) : MEMORY_SLOT_SIZE;
 
 		//-------------------------------------------------------------------------
 		static uint IsCodePadding(byte* pInst, uint size) {
@@ -57,15 +57,15 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		public static uint CreateTrampolineFunction32(TRAMPOLINE32* ct) {
-			CALL_REL call = new CALL_REL {
+			var call = new CALL_REL {
 				opcode = 0xE8,                  // E8 xxxxxxxx: CALL +5+xxxxxxxx
 				operand = 0x00000000            // Relative destination address
 			};
-			JMP_REL jmp = new JMP_REL {
+			var jmp = new JMP_REL {
 				opcode = 0xE9,                  // E9 xxxxxxxx: JMP +5+xxxxxxxx
 				operand = 0x00000000            // Relative destination address
 			};
-			JCC_REL jcc = new JCC_REL {
+			var jcc = new JCC_REL {
 				opcode0 = 0x0F, opcode1 = 0x80, // 0F8* xxxxxxxx: J** +6+xxxxxxxx
 				operand = 0x00000000            // Relative destination address
 			};
@@ -86,11 +86,11 @@ namespace MinHooking {
 				byte* pOldInst = (byte*)ct->pTarget + oldPos;
 				byte* pNewInst = (byte*)ct->pTrampoline + newPos;
 
-				copySize = HDE_DISASM((void*)pOldInst, &hs);
+				copySize = HDE_DISASM(pOldInst, &hs);
 				if ((hs.flags & Hde32.F_ERROR) != 0)
 					return FALSE;
 
-				pCopySrc = (void*)pOldInst;
+				pCopySrc = pOldInst;
 				if (oldPos >= sizeof(JMP_REL)) {
 					// The trampoline function is long enough.
 					// Complete the function with the jump to the target function.
@@ -214,16 +214,16 @@ namespace MinHooking {
 		}
 
 		public static uint CreateTrampolineFunction64(TRAMPOLINE64* ct) {
-			CALL_ABS call = new CALL_ABS {
+			var call = new CALL_ABS {
 				opcode0 = 0xFF, opcode1 = 0x15, dummy0 = 0x00000002, // FF15 00000002: CALL [RIP+8]
 				dummy1 = 0xEB, dummy2 = 0x08,                        // EB 08:         JMP +10
 				address = 0x0000000000000000                         // Absolute destination address
 			};
-			JMP_ABS jmp = new JMP_ABS {
+			var jmp = new JMP_ABS {
 				opcode0 = 0xFF, opcode1 = 0x25, dummy = 0x00000000,  // FF25 00000000: JMP [RIP+6]
 				address = 0x0000000000000000                         // Absolute destination address
 			};
-			JCC_ABS jcc = new JCC_ABS {
+			var jcc = new JCC_ABS {
 				opcode = 0x70, dummy0 = 0x0E,                        // 7* 0E:         J** +16
 				dummy1 = 0xFF, dummy2 = 0x25, dummy3 = 0x00000000,   // FF25 00000000: JMP [RIP+6]
 				address = 0x0000000000000000                         // Absolute destination address
@@ -246,11 +246,11 @@ namespace MinHooking {
 				byte* pOldInst = (byte*)ct->pTarget + oldPos;
 				byte* pNewInst = (byte*)ct->pTrampoline + newPos;
 
-				copySize = HDE_DISASM((void*)pOldInst, &hs);
+				copySize = HDE_DISASM(pOldInst, &hs);
 				if ((hs.flags & Hde64.F_ERROR) != 0)
 					return FALSE;
 
-				pCopySrc = (void*)pOldInst;
+				pCopySrc = pOldInst;
 				if (oldPos >= sizeof(JMP_REL)) {
 					// The trampoline function is long enough.
 					// Complete the function with the jump to the target function.

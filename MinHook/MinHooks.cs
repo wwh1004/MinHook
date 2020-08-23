@@ -70,18 +70,10 @@ namespace MinHooking {
 		}
 
 		internal static MinHookManaged Create(void* pTarget, void* pDetour, void* pOriginalStub) {
-			IMinHook targetHook;
-			void* pOriginal;
-			IMinHook originalStubHook;
-
-#pragma warning disable IDE0068
-			targetHook = MinHookFactory.Create(pTarget, pDetour, out pOriginal);
-#pragma warning restore IDE0068
+			var targetHook = MinHookFactory.Create(pTarget, pDetour, out void* pOriginal);
 			if (targetHook is null)
 				return null;
-#pragma warning disable IDE0068
-			originalStubHook = MinHookFactory.Create(pOriginalStub, pOriginal);
-#pragma warning restore IDE0068
+			var originalStubHook = MinHookFactory.Create(pOriginalStub, pOriginal);
 			if (originalStubHook is null) {
 				targetHook.Dispose();
 				return null;

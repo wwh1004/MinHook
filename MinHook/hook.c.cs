@@ -141,7 +141,7 @@ namespace MinHooking {
 					return null;
 			}
 			else if (g_hooks.size >= g_hooks.capacity) {
-				HOOK_ENTRY* p = (HOOK_ENTRY*)HeapReAlloc(
+				var p = (HOOK_ENTRY*)HeapReAlloc(
 					g_hHeap, 0, g_hooks.pItems, g_hooks.capacity * 2 * (uint)sizeof(HOOK_ENTRY));
 				if (p == null)
 					return null;
@@ -161,7 +161,7 @@ namespace MinHooking {
 			g_hooks.size--;
 
 			if (g_hooks.capacity / 2 >= INITIAL_HOOK_CAPACITY && g_hooks.capacity / 2 >= g_hooks.size) {
-				HOOK_ENTRY* p = (HOOK_ENTRY*)HeapReAlloc(
+				var p = (HOOK_ENTRY*)HeapReAlloc(
 					g_hHeap, 0, g_hooks.pItems, g_hooks.capacity / 2 * (uint)sizeof(HOOK_ENTRY));
 				if (p == null)
 					return;
@@ -228,7 +228,7 @@ namespace MinHooking {
 			}
 
 			for (; pos < count; ++pos) {
-				HOOK_ENTRY* pHook = &g_hooks.pItems[pos];
+				var pHook = &g_hooks.pItems[pos];
 				uint enable;
 				byte* ip;
 
@@ -284,7 +284,7 @@ namespace MinHooking {
 			}
 
 			for (; pos < count; ++pos) {
-				HOOK_ENTRY* pHook = &g_hooks.pItems[pos];
+				var pHook = &g_hooks.pItems[pos];
 				uint enable;
 				byte* ip;
 
@@ -403,7 +403,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		private static MH_STATUS EnableHookLL(uint pos, uint enable) {
-			HOOK_ENTRY* pHook = &g_hooks.pItems[pos];
+			var pHook = &g_hooks.pItems[pos];
 			uint oldProtect;
 			uint patchSize = (uint)sizeof(JMP_REL);
 			byte* pPatchTarget = (byte*)pHook->pTarget;
@@ -418,12 +418,12 @@ namespace MinHooking {
 				return MH_STATUS.MH_ERROR_MEMORY_PROTECT;
 
 			if (enable != 0) {
-				JMP_REL* pJmp = (JMP_REL*)pPatchTarget;
+				var pJmp = (JMP_REL*)pPatchTarget;
 				pJmp->opcode = 0xE9;
 				pJmp->operand = (uint)((byte*)pHook->pDetour - (pPatchTarget + sizeof(JMP_REL)));
 
 				if (pHook->patchAbove != 0) {
-					JMP_REL_SHORT* pShortJmp = (JMP_REL_SHORT*)pHook->pTarget;
+					var pShortJmp = (JMP_REL_SHORT*)pHook->pTarget;
 					pShortJmp->opcode = 0xEB;
 					pShortJmp->operand = (byte)(0 - (sizeof(JMP_REL_SHORT) + sizeof(JMP_REL)));
 				}
@@ -448,7 +448,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		private static MH_STATUS EnableAllHooksLL(uint enable) {
-			MH_STATUS status = MH_STATUS.MH_OK;
+			var status = MH_STATUS.MH_OK;
 			uint i, first = INVALID_HOOK_POS;
 
 			for (i = 0; i < g_hooks.size; ++i) {
@@ -505,7 +505,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		public static MH_STATUS MH_Initialize() {
-			MH_STATUS status = MH_STATUS.MH_OK;
+			var status = MH_STATUS.MH_OK;
 
 			EnterSpinLock();
 
@@ -564,7 +564,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		public static MH_STATUS MH_CreateHook(void* pTarget, void* pDetour, void** ppOriginal) {
-			MH_STATUS status = MH_STATUS.MH_OK;
+			var status = MH_STATUS.MH_OK;
 
 			EnterSpinLock();
 
@@ -581,7 +581,7 @@ namespace MinHooking {
 								ct.pDetour = pDetour;
 								ct.pTrampoline = pBuffer;
 								if (CreateTrampolineFunction64(&ct) != 0) {
-									HOOK_ENTRY* pHook = AddHookEntry();
+									var pHook = AddHookEntry();
 									if (!(pHook == null)) {
 										pHook->pTarget = ct.pTarget;
 										pHook->pDetour = ct.pRelay;
@@ -627,7 +627,7 @@ namespace MinHooking {
 								ct.pDetour = pDetour;
 								ct.pTrampoline = pBuffer;
 								if (CreateTrampolineFunction32(&ct) != 0) {
-									HOOK_ENTRY* pHook = AddHookEntry();
+									var pHook = AddHookEntry();
 									if (!(pHook == null)) {
 										pHook->pTarget = ct.pTarget;
 										pHook->pDetour = ct.pDetour;
@@ -690,7 +690,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		public static MH_STATUS MH_RemoveHook(void* pTarget) {
-			MH_STATUS status = MH_STATUS.MH_OK;
+			var status = MH_STATUS.MH_OK;
 
 			EnterSpinLock();
 
@@ -726,7 +726,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		private static MH_STATUS EnableHook(void* pTarget, uint enable) {
-			MH_STATUS status = MH_STATUS.MH_OK;
+			var status = MH_STATUS.MH_OK;
 
 			EnterSpinLock();
 
@@ -775,7 +775,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		private static MH_STATUS QueueHook(void* pTarget, uint queueEnable) {
-			MH_STATUS status = MH_STATUS.MH_OK;
+			var status = MH_STATUS.MH_OK;
 
 			EnterSpinLock();
 
@@ -816,7 +816,7 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		public static MH_STATUS MH_ApplyQueued() {
-			MH_STATUS status = MH_STATUS.MH_OK;
+			var status = MH_STATUS.MH_OK;
 			uint i, first = INVALID_HOOK_POS;
 
 			EnterSpinLock();
@@ -834,7 +834,7 @@ namespace MinHooking {
 					Freeze(&threads, ALL_HOOKS_POS, ACTION_APPLY_QUEUED);
 
 					for (i = first; i < g_hooks.size; ++i) {
-						HOOK_ENTRY* pHook = &g_hooks.pItems[i];
+						var pHook = &g_hooks.pItems[i];
 						if (pHook->isEnabled != pHook->queueEnable) {
 							status = EnableHookLL(i, pHook->queueEnable);
 							if (status != MH_STATUS.MH_OK)

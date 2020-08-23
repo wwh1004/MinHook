@@ -87,11 +87,11 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		public static void UninitializeBuffer() {
-			MEMORY_BLOCK* pBlock = g_pMemoryBlocks;
+			var pBlock = g_pMemoryBlocks;
 			g_pMemoryBlocks = null;
 
 			while (!(pBlock == null)) {
-				MEMORY_BLOCK* pNext = pBlock->pNext;
+				var pNext = pBlock->pNext;
 				VirtualFree(pBlock, 0, 0x8000);
 				// MEM_RELEASE
 				pBlock = pNext;
@@ -110,12 +110,12 @@ namespace MinHooking {
 
 			while (tryAddr >= pMinAddr) {
 				MEMORY_BASIC_INFORMATION mbi;
-				if (VirtualQuery((void*)tryAddr, &mbi, (uint)sizeof(MEMORY_BASIC_INFORMATION)) == null)
+				if (VirtualQuery(tryAddr, &mbi, (uint)sizeof(MEMORY_BASIC_INFORMATION)) == null)
 					break;
 
 				if (mbi.State == 0x00010000)
 					// MEM_FREE
-					return (void*)tryAddr;
+					return tryAddr;
 
 				if ((ulong)mbi.AllocationBase < dwAllocationGranularity)
 					break;
@@ -138,12 +138,12 @@ namespace MinHooking {
 
 			while (tryAddr <= pMaxAddr) {
 				MEMORY_BASIC_INFORMATION mbi;
-				if (VirtualQuery((void*)tryAddr, &mbi, (uint)sizeof(MEMORY_BASIC_INFORMATION)) == null)
+				if (VirtualQuery(tryAddr, &mbi, (uint)sizeof(MEMORY_BASIC_INFORMATION)) == null)
 					break;
 
 				if (mbi.State == 0x00010000)
 					// MEM_FREE
-					return (void*)tryAddr;
+					return tryAddr;
 
 				tryAddr = mbi.BaseAddress + (ulong)mbi.RegionSize;
 
@@ -195,7 +195,7 @@ namespace MinHooking {
 				{
 					void* pAlloc = pOrigin;
 					while (pAlloc >= minAddr) {
-						pAlloc = FindPrevFreeRegion(pAlloc, (void*)minAddr, si.dwAllocationGranularity);
+						pAlloc = FindPrevFreeRegion(pAlloc, minAddr, si.dwAllocationGranularity);
 						if (pAlloc == null)
 							break;
 
@@ -211,7 +211,7 @@ namespace MinHooking {
 				if (pBlock == null) {
 					void* pAlloc = pOrigin;
 					while (pAlloc <= maxAddr) {
-						pAlloc = FindNextFreeRegion(pAlloc, (void*)maxAddr, si.dwAllocationGranularity);
+						pAlloc = FindNextFreeRegion(pAlloc, maxAddr, si.dwAllocationGranularity);
 						if (pAlloc == null)
 							break;
 
@@ -232,7 +232,7 @@ namespace MinHooking {
 
 			if (!(pBlock == null)) {
 				// Build a linked list of all the slots.
-				MEMORY_SLOT* pSlot = (MEMORY_SLOT*)pBlock + 1;
+				var pSlot = (MEMORY_SLOT*)pBlock + 1;
 				pBlock->pFree = null;
 				pBlock->usedCount = 0;
 				do {
@@ -251,7 +251,7 @@ namespace MinHooking {
 		//-------------------------------------------------------------------------
 		public static void* AllocateBuffer(void* pOrigin) {
 			MEMORY_SLOT* pSlot;
-			MEMORY_BLOCK* pBlock = GetMemoryBlock(pOrigin);
+			var pBlock = GetMemoryBlock(pOrigin);
 			if (pBlock == null)
 				return null;
 
@@ -264,13 +264,13 @@ namespace MinHooking {
 
 		//-------------------------------------------------------------------------
 		public static void FreeBuffer(void* pBuffer) {
-			MEMORY_BLOCK* pBlock = g_pMemoryBlocks;
+			var pBlock = g_pMemoryBlocks;
 			MEMORY_BLOCK* pPrev = null;
 			byte* pTargetBlock = (byte*)((ulong)pBuffer / MEMORY_BLOCK_SIZE * MEMORY_BLOCK_SIZE);
 
 			while (!(pBlock == null)) {
 				if ((byte*)pBlock == pTargetBlock) {
-					MEMORY_SLOT* pSlot = (MEMORY_SLOT*)pBuffer;
+					var pSlot = (MEMORY_SLOT*)pBuffer;
 					// Restore the released slot to the list.
 					pSlot->pNext = pBlock->pFree;
 					pBlock->pFree = pSlot;

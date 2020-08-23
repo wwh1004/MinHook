@@ -9,7 +9,9 @@ using static MinHooking.Hde.Table32;
 
 namespace MinHooking.Hde {
 	internal static unsafe partial class Hde32 {
+#pragma warning disable IDE1006 // Naming Styles
 		public static uint hde32_disasm(void* code, hde32s* hs) {
+#pragma warning restore IDE1006 // Naming Styles
 			byte x;
 			byte c = 0;
 			byte* p = (byte*)code;
@@ -113,7 +115,7 @@ namespace MinHooking.Hde {
 				if (hs->opcode2 == 0 && opcode >= 0xd9 && opcode <= 0xdf) {
 					byte t = (byte)(opcode - 0xd9);
 					if (m_mod == 3) {
-						ht = hde32_table + DELTA_FPU_MODRM + t * 8;
+						ht = hde32_table + DELTA_FPU_MODRM + (t * 8);
 						t = (byte)(ht[m_reg] << m_rm);
 					}
 					else {

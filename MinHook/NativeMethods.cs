@@ -6,7 +6,7 @@ namespace MinHooking {
 
 		public const byte TRUE = 1;
 
-		public static bool WIN64 = sizeof(void*) == 8;
+		public static readonly bool WIN64 = sizeof(void*) == 8;
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct MEMORY_BASIC_INFORMATION {
@@ -129,13 +129,15 @@ namespace MinHooking {
 		[DllImport("kernel32.dll", SetLastError = true)]
 		public static extern uint Thread32Next(void* hSnapshot, THREADENTRY32* lpte);
 
-		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Unicode, EntryPoint = "GetModuleHandleW", ExactSpelling = true, SetLastError = true)]
+		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Unicode, SetLastError = true)]
 		public static extern void* GetModuleHandle(string lpModuleName);
 
-		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Ansi, EntryPoint = "GetProcAddress", ExactSpelling = true, SetLastError = true)]
+		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Ansi, SetLastError = true)]
 		public static extern void* GetProcAddress(void* hModule, string lpProcName);
 
 		[DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+#pragma warning disable IDE1006 // Naming Styles
 		public static extern void* memcpy(void* _Dst, void* _Src, uint _Size);
+#pragma warning restore IDE1006 // Naming Styles
 	}
 }
