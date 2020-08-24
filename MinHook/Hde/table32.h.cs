@@ -76,5 +76,6 @@ namespace MinHooking.Hde {
 			0xe7,0x08,0x00,0xf0,0x02,0x00
 		};
 		public static readonly byte* hde32_table = (byte*)GCHandle.Alloc(_hde32_table, GCHandleType.Pinned).AddrOfPinnedObject();
+		public static readonly ushort hde32_table_len = (ushort)_hde32_table.Length;
 	}
 }

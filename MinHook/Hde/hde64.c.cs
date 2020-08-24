@@ -212,7 +212,7 @@ namespace MinHooking.Hde {
 					byte* table_end;
 					if (hs->opcode2 != 0) {
 						ht = hde64_table + DELTA_OP2_ONLY_MEM;
-						table_end = ht + _hde64_table.Length - DELTA_OP2_ONLY_MEM;
+						table_end = ht + hde64_table_len - DELTA_OP2_ONLY_MEM;
 					}
 					else {
 						ht = hde64_table + DELTA_OP_ONLY_MEM;

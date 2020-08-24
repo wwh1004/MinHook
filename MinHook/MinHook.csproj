@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Title>$(ProjectName)</Title>
-		<Version>1.3.3.10</Version>
+		<Version>1.3.3.11</Version>
 		<Copyright>Copyright © 2018-2020 TsudaKageyu / Wwh</Copyright>
 	</PropertyGroup>
 	<PropertyGroup>
